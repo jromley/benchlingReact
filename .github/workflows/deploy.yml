@@ -32,36 +32,17 @@ jobs:
 
   deploy:
     needs: build-check
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Sync backend source
-        run: |
-          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" \
-            backend/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/backend/"
-
-      - name: Sync frontend source
-        run: |
-          rsync -avz --delete --exclude node_modules --exclude dist -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/frontend/"
-
       - name: Rebuild and restart services
         run: |
-          ssh -i ~/.ssh/deploy_key "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" '
-            set -e
-            cd ~/backend && podman build -t localhost/benchling-backend:latest -f Containerfile .
-            cd ~/frontend && podman build -t localhost/benchling-frontend:latest -f Containerfile .
-            systemctl --user restart backend.service
-            systemctl --user restart frontend.service
-          '
+          set -e
+          cd backend && podman build -t localhost/benchling-backend:latest -f Containerfile .
+          cd ../frontend && podman build -t localhost/benchling-frontend:latest -f Containerfile .
+          systemctl --user restart backend.service
+          systemctl --user restart frontend.service
 
       - name: Verify deployment
         run: |
