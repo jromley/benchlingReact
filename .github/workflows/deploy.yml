@@ -1,0 +1,69 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check backend syntax
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+          python -m compileall app
+
+  deploy:
+    needs: build-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync backend source
+        run: |
+          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key" \
+            backend/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/backend/"
+
+      - name: Sync frontend source
+        run: |
+          rsync -avz --delete --exclude node_modules --exclude dist -e "ssh -i ~/.ssh/deploy_key" \
+            frontend/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/frontend/"
+
+      - name: Rebuild and restart services
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" '
+            set -e
+            cd ~/backend && podman build -t localhost/benchling-backend:latest -f Containerfile .
+            cd ~/frontend && podman build -t localhost/benchling-frontend:latest -f Containerfile .
+            systemctl --user restart backend.service
+            systemctl --user restart frontend.service
+          '
+
+      - name: Verify deployment
+        run: |
+          sleep 5
+          curl -sf https://joshromley-projects.dev/api/helloworld
