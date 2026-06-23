@@ -20,6 +20,11 @@ jobs:
           npm ci
           npm run build
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -36,11 +41,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
       - name: Rebuild and restart services
         run: |
           set -e
           cd backend && podman build -t localhost/benchling-backend:latest -f Containerfile .
-          cd ../frontend && podman build -t localhost/benchling-frontend:latest -f Containerfile .
+          cd ../frontend && podman build -t localhost/benchling-frontend:latest -f Containerfile.ci .
           systemctl --user restart backend.service
           systemctl --user restart frontend.service
 
