@@ -85,4 +85,9 @@ def get_document_file(doc_id: int):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File missing on disk")
 
-    return FileResponse(file_path, media_type="application/pdf", filename=row["filename"])
+    return FileResponse(
+        file_path,
+        media_type="application/pdf",
+        filename=row["filename"],
+        content_disposition_type="inline",
+    )
