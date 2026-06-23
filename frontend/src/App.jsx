@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 function App() {
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
-  const [document, setDocument] = useState(null)
+  const [resumeDoc, setResumeDoc] = useState(null)
   const [documentError, setDocumentError] = useState(null)
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function App() {
 
     fetch(`${API_URL}/documents`)
       .then((res) => res.json())
-      .then((docs) => setDocument(docs[0] ?? null))
+      .then((docs) => setResumeDoc(docs[0] ?? null))
       .catch((err) => setDocumentError(err.message))
   }, [])
 
@@ -32,13 +32,20 @@ function App() {
 
       <h2>Resume</h2>
       {documentError && <p style={{ color: 'red' }}>Error: {documentError}</p>}
-      {document && (
-        <iframe
-          title={document.filename}
-          src={`${API_URL}/documents/${document.id}/file`}
-          width="100%"
-          height="800px"
-        />
+      {resumeDoc && (
+        <>
+          <p>
+            <a href={`${API_URL}/documents/${resumeDoc.id}/file?download=true`} download>
+              Download {resumeDoc.filename}
+            </a>
+          </p>
+          <iframe
+            title={resumeDoc.filename}
+            src={`${API_URL}/documents/${resumeDoc.id}/file`}
+            width="100%"
+            height="800px"
+          />
+        </>
       )}
     </section>
   )

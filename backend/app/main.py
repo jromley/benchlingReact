@@ -71,7 +71,7 @@ def list_documents():
 
 
 @app.get("/documents/{doc_id}/file")
-def get_document_file(doc_id: int):
+def get_document_file(doc_id: int, download: bool = False):
     with engine.connect() as conn:
         row = conn.execute(
             text("SELECT filename, stored_filename FROM documents WHERE id = :id"),
@@ -85,9 +85,11 @@ def get_document_file(doc_id: int):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File missing on disk")
 
+    if download:
+        return FileResponse(file_path, media_type="application/pdf", filename=row["filename"])
+
     return FileResponse(
         file_path,
         media_type="application/pdf",
-        filename=row["filename"],
-        content_disposition_type="inline",
+        headers={"Content-Disposition": "inline"},
     )
