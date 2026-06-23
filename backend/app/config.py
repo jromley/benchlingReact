@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     postgres_host: str = "postgres"  # matches ContainerName in postgres.container quadlet
     postgres_port: int = 5432
     cors_origins: list[str] = ["http://localhost:5173"]
+    pdf_storage_dir: str = "/app/data/pdfs"
 
     @property
     def database_url(self) -> str:
