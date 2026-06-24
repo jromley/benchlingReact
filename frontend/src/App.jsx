@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import ContactForm from './components/ContactForm'
+import headshot from './assets/headshot.jpg'
 import './App.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
@@ -19,6 +20,16 @@ function App() {
   return (
     <div id="top">
       <Navbar />
+
+      <header className="hero">
+        <div className="hero-text">
+          <h1>Josh Romley</h1>
+          <p className="hero-tagline">
+            Full-stack engineer who ships — from cloud infrastructure to apps people actually use.
+          </p>
+        </div>
+        <img className="hero-photo" src={headshot} alt="Josh Romley" />
+      </header>
 
       <main>
         <section id="about">
@@ -65,12 +76,11 @@ function App() {
               </>
             )}
           </h2>
-          <br></br>
           {documentError && <p style={{ color: 'red' }}>Error: {documentError}</p>}
           {resumeDoc && (
             <iframe
               title={resumeDoc.filename}
-              src={`${API_URL}/documents/${resumeDoc.id}/file`}
+              src={`${API_URL}/documents/${resumeDoc.id}/file#zoom=75`}
               width="100%"
               height="800px"
             />
