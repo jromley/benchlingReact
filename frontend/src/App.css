@@ -170,3 +170,146 @@ main section:last-child {
     }
   }
 }
+
+#ai-integration > p {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.ai-integration-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  text-align: left;
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-h);
+    margin: 0 0 16px;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+
+  a {
+    color: var(--text-h);
+    text-decoration: none;
+    font-size: 15px;
+    line-height: 140%;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.news-meta {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.chat-widget {
+  display: flex;
+  flex-direction: column;
+  height: 420px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-placeholder {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.chat-message {
+  font-size: 15px;
+  line-height: 145%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  max-width: 85%;
+}
+
+.chat-message-user {
+  align-self: flex-end;
+  background: var(--text-h);
+  color: var(--bg);
+}
+
+.chat-message-assistant {
+  align-self: flex-start;
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.chat-input-row {
+  display: flex;
+  border-top: 1px solid var(--border);
+
+  input {
+    flex: 1;
+    font: inherit;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: none;
+    background: var(--bg);
+    color: var(--text-h);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  button {
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    padding: 0 20px;
+    border: none;
+    background: var(--text-h);
+    color: var(--bg);
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

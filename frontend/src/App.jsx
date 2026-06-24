@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import ContactForm from './components/ContactForm'
+import NewsList from './components/NewsList'
+import ChatWidget from './components/ChatWidget'
 import headshot from './assets/headshot.jpg'
 import './App.css'
 
@@ -89,7 +91,21 @@ function App() {
 
         <section id="ai-integration">
           <h2>AI Integration</h2>
-          <p>TBD</p>
+          <p>
+            Here's a list of AI articles from sources I pay attention to.
+            Claude regularly updates the list with the latest information. I
+            also integrated a chat assistant to ask about my background.
+          </p>
+          <div className="ai-integration-grid">
+            <div>
+              <h3>Latest AI News</h3>
+              <NewsList />
+            </div>
+            <div>
+              <h3>Ask About Me</h3>
+              <ChatWidget />
+            </div>
+          </div>
         </section>
 
         <section id="contact">
