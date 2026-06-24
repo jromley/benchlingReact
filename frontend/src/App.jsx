@@ -24,8 +24,25 @@ function App() {
         <section id="about">
           <h2>About Me</h2>
           <p>
-            Placeholder bio — add a paragraph here about your background,
-            interests, and what you're looking for.
+            I'm a software engineer with a BS in Computer Science from Drexel
+            University, concentrated in AI and Human-Computer Interaction. I
+            also completed Cogent University's professional Java development
+            course and hold an AWS Certified Developer certification.
+          </p>
+          <p>
+            I've built software at companies of all sizes — Comcast, SAS,
+            Axis Technology, Zift, and ReverbNation — primarily in Java, with
+            plenty of Python, various JavaScript stacks, Bash, PowerShell,
+            C#, and Dart/Flutter along the way. I built and published the
+            iOS/Android app "Blue Skies" for the non-profit Project Refit,
+            and I enjoy taking initiative and mentoring other engineers.
+          </p>
+          <p>
+            Outside of work, I'm an avid traveler and surfer. I treat cooking
+            like a fun science experiment — your grade is how tasty what you
+            made turns out to be — and I own nearly every cooking tool
+            imaginable. I've also raised over 100,000 chickens, and I'm a
+            published poet, featured in "Poems for Writing Prompts, 2nd Ed."
           </p>
         </section>
 
