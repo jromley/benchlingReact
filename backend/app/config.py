@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     pdf_storage_dir: str = "/app/data/pdfs"
     contact_recipient_email: str = "joshmromley@gmail.com"
     ses_region: str = "us-east-1"
+    anthropic_api_key: str = ""
+    chat_rate_limit_per_hour: int = 10
 
     @property
     def database_url(self) -> str:

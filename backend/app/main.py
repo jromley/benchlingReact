@@ -1,21 +1,26 @@
+import time
 import uuid
+from collections import defaultdict
 from pathlib import Path
 
+import anthropic
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 
 from app.config import settings
+from app.db import engine
 
 app = FastAPI(title="benchling-react backend")
-engine = create_engine(settings.database_url)
 storage_dir = Path(settings.pdf_storage_dir)
 storage_dir.mkdir(parents=True, exist_ok=True)
 ses_client = boto3.client("ses", region_name=settings.ses_region)
+anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+chat_request_log: dict[str, list[float]] = defaultdict(list)
 
 app.add_middleware(
     CORSMiddleware,
@@ -123,3 +128,82 @@ def submit_contact_form(form: ContactRequest):
         raise HTTPException(status_code=502, detail="Failed to send message") from e
 
     return {"status": "sent"}
+
+
+@app.get("/news")
+def list_news(limit: int = 20):
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text(
+                "SELECT title, link, source, published_at FROM news_articles "
+                "ORDER BY published_at DESC NULLS LAST LIMIT :limit"
+            ),
+            {"limit": limit},
+        ).mappings().all()
+    return [dict(row) for row in rows]
+
+
+CHAT_SYSTEM_PROMPT = """You are a helpful assistant on Josh Romley's personal portfolio website,
+talking to a visitor who may be a potential employer, client, or collaborator. Your job is to:
+1. Answer questions about Josh's background and experience, and
+2. Help the visitor understand how Josh could help them, based on what they're looking for.
+
+Josh's background:
+Josh is a software engineer with a BS in Computer Science from Drexel University, concentrated in
+AI and Human-Computer Interaction. He completed Cogent University's professional Java development
+course and holds an AWS Certified Developer certification. He's worked at Comcast, SAS, Axis
+Technology, Zift, and ReverbNation, primarily in Java, with experience in Python, various
+JavaScript stacks, Bash, PowerShell, C#, and Dart/Flutter. He built and published the iOS/Android
+app "Blue Skies" for the non-profit Project Refit, and enjoys mentoring other engineers. Outside of
+work he's an avid traveler, backpacker, and surfer, raised over 100,000 chickens, and is a
+published poet featured in "Poems for Writing Prompts, 2nd Ed."
+
+Keep responses concise (2-4 sentences). Stay strictly on topic: Josh's background, skills,
+experience, and how he could help the visitor with their project, role, or team. If asked about
+anything else (general knowledge, unrelated tasks, etc.), politely decline and redirect back to
+Josh's background or ask what the visitor is looking for so you can connect it to his experience."""
+
+CHAT_MODEL = "claude-haiku-4-5-20251001"
+CHAT_MAX_TOKENS = 300
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+
+def check_rate_limit(client_ip: str):
+    now = time.time()
+    window_start = now - 3600
+    recent = [t for t in chat_request_log[client_ip] if t > window_start]
+    chat_request_log[client_ip] = recent
+
+    if len(recent) >= settings.chat_rate_limit_per_hour:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded. Try again later.")
+
+    recent.append(now)
+
+
+@app.post("/chat")
+def chat(req: ChatRequest, request: Request):
+    client_ip = request.headers.get("x-real-ip", request.client.host if request.client else "unknown")
+    check_rate_limit(client_ip)
+
+    if not req.messages:
+        raise HTTPException(status_code=400, detail="No messages provided")
+
+    try:
+        response = anthropic_client.messages.create(
+            model=CHAT_MODEL,
+            max_tokens=CHAT_MAX_TOKENS,
+            system=CHAT_SYSTEM_PROMPT,
+            messages=[{"role": m.role, "content": m.content} for m in req.messages[-10:]],
+        )
+    except anthropic.APIError as e:
+        raise HTTPException(status_code=502, detail="Chat request failed") from e
+
+    return {"reply": response.content[0].text}
