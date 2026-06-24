@@ -65,6 +65,7 @@ main section {
 
 main section:last-child {
   border-bottom: none;
+  padding-bottom: 70vh;
 }
 
 #about p {

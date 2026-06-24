@@ -38,31 +38,42 @@ function App() {
             and I enjoy taking initiative and mentoring other engineers.
           </p>
           <p>
-            Outside of work, I'm an avid traveler and surfer. I treat cooking
-            like a fun science experiment — your grade is how tasty what you
-            made turns out to be — and I own nearly every cooking tool
-            imaginable. I've also raised over 100,000 chickens, and I'm a
-            published poet, featured in "Poems for Writing Prompts, 2nd Ed."
+            Outside of work, I'm an avid traveler, backpacker, and surfer. 
+            I've raised over 100,000 chickens and love cooking. It's like 
+            a science experiment where your grade is obvious with the end product. 
+            I'm also a published poet, featured in "Poems for Writing Prompts, 2nd Ed."
+          </p>
+          <p>
+            I'm always happy to talk, so please feel free to connect with me on{' '}
+            <a href="https://www.linkedin.com/in/josh-romley-061a435a/" target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+            .
           </p>
         </section>
 
         <section id="resume">
-          <h2>Resume</h2>
+          <h2>
+            Resume
+            {resumeDoc && (
+              <>
+                {' '}
+                -{' '}
+                <a href={`${API_URL}/documents/${resumeDoc.id}/file?download=true`} download>
+                  Download PDF
+                </a>
+              </>
+            )}
+          </h2>
+          <br></br>
           {documentError && <p style={{ color: 'red' }}>Error: {documentError}</p>}
           {resumeDoc && (
-            <>
-              <p>
-                <a href={`${API_URL}/documents/${resumeDoc.id}/file?download=true`} download>
-                  Download {resumeDoc.filename}
-                </a>
-              </p>
-              <iframe
-                title={resumeDoc.filename}
-                src={`${API_URL}/documents/${resumeDoc.id}/file`}
-                width="100%"
-                height="800px"
-              />
-            </>
+            <iframe
+              title={resumeDoc.filename}
+              src={`${API_URL}/documents/${resumeDoc.id}/file`}
+              width="100%"
+              height="800px"
+            />
           )}
         </section>
 
@@ -72,12 +83,7 @@ function App() {
         </section>
 
         <section id="contact">
-          <h2>Contact Us</h2>
-          <p>
-            <a href="https://www.linkedin.com/in/josh-romley-061a435a/" target="_blank" rel="noreferrer">
-              LinkedIn
-            </a>
-          </p>
+          <h2>Contact Me</h2>
           <ContactForm />
         </section>
       </main>
