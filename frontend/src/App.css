@@ -65,6 +65,17 @@ main section {
 
 main section:last-child {
   border-bottom: none;
+  padding-bottom: 70vh;
+}
+
+#about p {
+  max-width: 640px;
+  margin: 0 auto 16px;
+  text-align: left;
+}
+
+#about p:last-child {
+  margin-bottom: 0;
 }
 
 .contact-form {
