@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
     cors_origins: list[str] = ["http://localhost:5173"]
     pdf_storage_dir: str = "/app/data/pdfs"
+    contact_recipient_email: str = "joshmromley@gmail.com"
+    ses_region: str = "us-east-1"
 
     @property
     def database_url(self) -> str:

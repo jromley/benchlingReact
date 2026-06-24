@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
+import ContactForm from './components/ContactForm'
 import './App.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
@@ -54,8 +55,13 @@ function App() {
         </section>
 
         <section id="contact">
-          <h2>Contact</h2>
-          <p>Placeholder — add your email and/or social links here.</p>
+          <h2>Contact Us</h2>
+          <p>
+            <a href="https://www.linkedin.com/in/josh-romley-061a435a/" target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+          </p>
+          <ContactForm />
         </section>
       </main>
     </div>
