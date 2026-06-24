@@ -1,9 +1,12 @@
 import uuid
 from pathlib import Path
 
+import boto3
+from botocore.exceptions import ClientError
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, text
 
 from app.config import settings
@@ -12,6 +15,7 @@ app = FastAPI(title="benchling-react backend")
 engine = create_engine(settings.database_url)
 storage_dir = Path(settings.pdf_storage_dir)
 storage_dir.mkdir(parents=True, exist_ok=True)
+ses_client = boto3.client("ses", region_name=settings.ses_region)
 
 app.add_middleware(
     CORSMiddleware,
@@ -93,3 +97,29 @@ def get_document_file(doc_id: int, download: bool = False):
         media_type="application/pdf",
         headers={"Content-Disposition": "inline"},
     )
+
+
+class ContactRequest(BaseModel):
+    email: EmailStr
+    message: str
+
+
+@app.post("/contact")
+def submit_contact_form(form: ContactRequest):
+    if not form.message.strip():
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
+
+    try:
+        ses_client.send_email(
+            Source=settings.contact_recipient_email,
+            Destination={"ToAddresses": [settings.contact_recipient_email]},
+            Message={
+                "Subject": {"Data": f"New contact form message from {form.email}"},
+                "Body": {"Text": {"Data": form.message}},
+            },
+            ReplyToAddresses=[form.email],
+        )
+    except ClientError as e:
+        raise HTTPException(status_code=502, detail="Failed to send message") from e
+
+    return {"status": "sent"}

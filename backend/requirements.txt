@@ -4,3 +4,5 @@ sqlalchemy==2.0.36
 psycopg[binary]==3.2.3
 pydantic-settings==2.6.1
 python-multipart==0.0.20
+boto3==1.35.97
+email-validator==2.2.0
