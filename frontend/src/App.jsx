@@ -46,18 +46,17 @@ function App() {
             I've built software at companies of all sizes — Comcast, SAS,
             Axis Technology, Zift, and ReverbNation — primarily in Java, with
             plenty of Python, various JavaScript stacks, Bash, PowerShell,
-            C#, and Dart/Flutter along the way. I built and published the
-            iOS/Android app "Blue Skies" for the non-profit Project Refit,
-            and I enjoy taking initiative and mentoring other engineers.
+            C#, and Dart/Flutter. I built and published the
+            iOS/Android app "Blue Skies" for the non-profit Project Refit.
           </p>
           <p>
-            Outside of work, I'm an avid traveler, backpacker, and surfer. 
+            Outside of work, I'm an avid reader, traveler, backpacker, and surfer. 
             I've raised over 100,000 chickens and love cooking. It's like 
             a science experiment where your grade is obvious with the end product. 
-            I'm also a published poet, featured in "Poems for Writing Prompts, 2nd Ed."
+            I also have multiple poems published in "Poems for Writing Prompts, 2nd Ed."
           </p>
           <p>
-            I'm always happy to talk, so please feel free to connect with me on{' '}
+            I'm always happy to talk, feel free to connect with me on{' '}
             <a href="https://www.linkedin.com/in/josh-romley-061a435a/" target="_blank" rel="noreferrer">
               LinkedIn
             </a>
